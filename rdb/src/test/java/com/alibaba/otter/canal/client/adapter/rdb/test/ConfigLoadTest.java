@@ -1,6 +1,7 @@
 package com.alibaba.otter.canal.client.adapter.rdb.test;
 
 import java.util.Map;
+import java.util.Properties;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,7 +21,11 @@ public class ConfigLoadTest {
 
     @Test
     public void testLoad() {
-        Map<String, MappingConfig> configMap =  ConfigLoader.load(null);
+        Properties env = new Properties(System.getProperties());
+        env.put("SERVICE_QZ_SHOP_CODE", "0008");
+        env.put("SERVICE_QZ_ENT_ID", "0");
+        env.put("SERVICE_QZ_ERP_CODE", "ACH");
+        Map<String, MappingConfig> configMap =  ConfigLoader.load(env);
 
         Assert.assertFalse(configMap.isEmpty());
     }

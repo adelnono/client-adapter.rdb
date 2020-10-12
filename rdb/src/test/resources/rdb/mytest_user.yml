@@ -1,17 +1,50 @@
+# dataSourceKey: defaultDS
+# destination: example
+# groupId: g1
+# outerAdapterKey: mysql1
+# concurrent: true
+# dbMapping:
+#   database: mytest
+#   table: user
+#   targetTable: mytest2.user
+#   targetPk:
+#     id: id
+# #  mapAll: true
+#   targetColumns:
+#     id:
+#     name:
+#     role_id:
+#     c_time:
+#     test1:
+#   etlCondition: "where c_time>={}"
+#   commitBatch: 3000 # 批量提交的大小
+
+
+## Mirror schema synchronize config
+shopCode: ${SERVICE_QZ_SHOP_CODE}
+entId: ${SERVICE_QZ_ENT_ID}
+erpCode: ${SERVICE_QZ_ERP_CODE}
+syncTables:
+  - adstrategytemplate
+  - brandinfo
 dataSourceKey: defaultDS
 destination: example
-outerAdapterKey: oracle1
+groupId: g1
+outerAdapterKey: mysql1
 concurrent: true
 dbMapping:
-  database: mytest
-  table: user
-  targetTable: mytest.tb_user
-  targetPk:
-    id: id
-  mapAll: true
-#  targetColumns:
-#    id:
-#    name:
-#    role_id:
-#    c_time:
-#    test1:
+  mirrorDb: true
+  database: test
+#  table: adstrategytemplate
+#  targetTable: test.adstrategytemplate
+#  targetPk:
+#    templateId: templateId
+#  mapAll: true
+#   targetColumns:
+#     id:
+#     name:
+#     role_id:
+#     c_time:
+#     test1:
+#   etlCondition: "where c_time>={}"
+#   commitBatch: 3000 # 批量提交的大小

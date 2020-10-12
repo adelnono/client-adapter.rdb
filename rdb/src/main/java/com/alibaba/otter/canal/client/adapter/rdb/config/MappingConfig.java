@@ -1,6 +1,7 @@
 package com.alibaba.otter.canal.client.adapter.rdb.config;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.alibaba.otter.canal.client.adapter.support.AdapterConfig;
@@ -25,6 +26,51 @@ public class MappingConfig implements AdapterConfig {
     private boolean   concurrent = false; // 是否并行同步
 
     private DbMapping dbMapping;          // db映射配置
+
+    private String shopCode;
+    private String entId;
+    private String erpCode;
+    private String[] syncTables;
+
+    public String getShopCode() {
+        return shopCode;
+    }
+
+    public void setShopCode(String shopCode) {
+        this.shopCode = shopCode;
+    }
+
+    public String getEntId() {
+        return entId;
+    }
+
+    public void setEntId(String entId) {
+        this.entId = entId;
+    }
+
+    public String getErpCode() {
+        return erpCode;
+    }
+
+    public void setErpCode(String erpCode) {
+        this.erpCode = erpCode;
+    }
+
+//    public String[] getSyncTableArray() {
+//        if (StringUtils.isNotBlank(syncTables)) {
+//            syncTables = syncTables.replaceAll("\\s*", "");
+//            return syncTables.split(",");
+//        }
+//        return new String[]{};
+//    }
+
+    public String[] getSyncTables() {
+        return syncTables;
+    }
+
+    public void setSyncTables(String[] syncTables) {
+        this.syncTables = syncTables;
+    }
 
     public String getDataSourceKey() {
         return dataSourceKey;

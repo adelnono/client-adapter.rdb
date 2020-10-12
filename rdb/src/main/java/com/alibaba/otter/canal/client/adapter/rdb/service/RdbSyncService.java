@@ -1,26 +1,5 @@
 package com.alibaba.otter.canal.client.adapter.rdb.service;
 
-import java.sql.Connection;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.function.Function;
-
-import javax.sql.DataSource;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.otter.canal.client.adapter.rdb.config.MappingConfig;
@@ -30,6 +9,17 @@ import com.alibaba.otter.canal.client.adapter.rdb.support.SingleDml;
 import com.alibaba.otter.canal.client.adapter.rdb.support.SyncUtil;
 import com.alibaba.otter.canal.client.adapter.support.Dml;
 import com.alibaba.otter.canal.client.adapter.support.Util;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.Function;
 
 /**
  * RDB同步操作业务
@@ -50,6 +40,7 @@ public class RdbSyncService {
     private List<SyncItem>[] dmlsPartition;
     private BatchExecutor[] batchExecutors;
     private ExecutorService[] executorThreads;
+    private Properties envProperties;
 
     public List<SyncItem>[] getDmlsPartition() {
         return dmlsPartition;
@@ -208,6 +199,64 @@ public class RdbSyncService {
     public void sync(BatchExecutor batchExecutor, MappingConfig config, SingleDml dml) {
         if (config != null) {
             try {
+                try {
+                    String[] syncTables = config.getSyncTables();
+                    if (syncTables.length > 0) {
+                        boolean isSyncTable = false;
+                        for (String syncTable : syncTables) {
+                            if (syncTable.equalsIgnoreCase(dml.getTable())) {
+                                isSyncTable = true;
+                                break;
+                            }
+                        }
+                        if (!isSyncTable) {
+                            logger.info("表: {} 未配置同步，不执行。。。", dml.getTable());
+                            return;
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error("判断表是否同步异常！！！", e);
+                }
+
+                try {
+                    String shopCode = config.getShopCode();
+                    String erpCode = config.getErpCode();
+                    String entId = config.getEntId();
+                    logger.debug("entId: {}, erpCode: {}, shopCode: {}", entId, erpCode, shopCode);
+                    String data_entId = dml.getData().get("entId").toString();
+                    if (StringUtils.isBlank(data_entId)) {
+                        data_entId = dml.getData().get("ent_id").toString();
+                    }
+                    if (StringUtils.isNotBlank(data_entId)) {
+                        if (!data_entId.equals(entId)) {
+                            logger.debug("不是 entId: {} 数据，不执行。。。", entId);
+                            return;
+                        }
+                    }
+                    String data_erpCode = dml.getData().get("erpCode").toString();
+                    if (StringUtils.isNotBlank(data_erpCode)) {
+                        if (!data_erpCode.equals(erpCode)) {
+                            logger.debug("不是 erpCode: {} 数据，不执行。。。", erpCode);
+                            return;
+                        }
+                    }
+                    String data_shopCode = dml.getData().get("mkt").toString();
+                    if (StringUtils.isBlank(data_shopCode)) {
+                        data_shopCode = dml.getData().get("shopCode").toString();
+                    }
+                    if (StringUtils.isBlank(data_shopCode)) {
+                        data_shopCode = dml.getData().get("shop_code").toString();
+                    }
+                    if (StringUtils.isNotBlank(data_shopCode)) {
+                        if (!data_shopCode.equals(shopCode)) {
+                            logger.debug("不是 {} 门店数据，不执行。。。", shopCode);
+                            return;
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error("获取环境变量异常！！！", e);
+                }
+
                 String type = dml.getType();
                 if (type != null && type.equalsIgnoreCase("INSERT")) {
                     insert(batchExecutor, config, dml);

@@ -19,8 +19,8 @@
     <modules>
         <module>common</module>
         <module>logger</module>
-        <module>hbase</module>
-        <module>elasticsearch</module>
+<!--        <module>hbase</module>-->
+<!--        <module>elasticsearch</module>-->
         <module>launcher</module>
         <module>rdb</module>
     </modules>
