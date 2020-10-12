@@ -223,32 +223,32 @@ public class RdbSyncService {
                     String erpCode = config.getErpCode();
                     String entId = config.getEntId();
                     logger.debug("entId: {}, erpCode: {}, shopCode: {}", entId, erpCode, shopCode);
-                    String data_entId = dml.getData().get("entId").toString();
-                    if (StringUtils.isBlank(data_entId)) {
-                        data_entId = dml.getData().get("ent_id").toString();
+                    Object dataEntId = dml.getData().get("entId");
+                    if (dataEntId == null) {
+                        dataEntId = dml.getData().get("ent_id");
                     }
-                    if (StringUtils.isNotBlank(data_entId)) {
-                        if (!data_entId.equals(entId)) {
+                    if (dataEntId != null) {
+                        if (!String.valueOf(dataEntId).equals(entId)) {
                             logger.debug("不是 entId: {} 数据，不执行。。。", entId);
                             return;
                         }
                     }
-                    String data_erpCode = dml.getData().get("erpCode").toString();
-                    if (StringUtils.isNotBlank(data_erpCode)) {
-                        if (!data_erpCode.equals(erpCode)) {
+                    Object dataErpCode = dml.getData().get("erpCode");
+                    if (dataErpCode != null) {
+                        if (!String.valueOf(dataErpCode).equals(erpCode)) {
                             logger.debug("不是 erpCode: {} 数据，不执行。。。", erpCode);
                             return;
                         }
                     }
-                    String data_shopCode = dml.getData().get("mkt").toString();
-                    if (StringUtils.isBlank(data_shopCode)) {
-                        data_shopCode = dml.getData().get("shopCode").toString();
+                    Object dataShopCode = dml.getData().get("mkt");
+                    if (dataShopCode == null) {
+                        dataShopCode = dml.getData().get("shopCode");
                     }
-                    if (StringUtils.isBlank(data_shopCode)) {
-                        data_shopCode = dml.getData().get("shop_code").toString();
+                    if (dataShopCode == null) {
+                        dataShopCode = dml.getData().get("shop_code");
                     }
-                    if (StringUtils.isNotBlank(data_shopCode)) {
-                        if (!data_shopCode.equals(shopCode)) {
+                    if (dataShopCode != null) {
+                        if (!dataShopCode.equals(shopCode)) {
                             logger.debug("不是 {} 门店数据，不执行。。。", shopCode);
                             return;
                         }
